@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小說口味問卷</title>
+<style>
+  :root{
+    --bg:#0f1226;
+    --card:#1a1f3a;
+    --card2:#222845;
+    --accent:#7c6cff;
+    --accent2:#ff7cc3;
+    --text:#eef0ff;
+    --muted:#9aa0c7;
+    --ok:#3ddc97;
+    --line:#2c3358;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#27306b 0%,var(--bg) 55%);
+    color:var(--text);
+    line-height:1.6;
+    padding:0 0 60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 18px;}
+  header{
+    text-align:center;padding:34px 18px 14px;
+  }
+  header h1{
+    font-size:26px;margin:0 0 8px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header p{color:var(--muted);margin:0;font-size:14px;}
+  .sec{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px 18px;
+    margin:16px 0;
+    box-shadow:0 8px 30px rgba(0,0,0,.25);
+  }
+  .q{font-size:17px;font-weight:700;margin:0 0 4px;}
+  .q .num{
+    display:inline-block;min-width:26px;height:26px;line-height:26px;text-align:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border-radius:8px;font-size:13px;margin-right:8px;color:#fff;
+  }
+  .hint{color:var(--muted);font-size:13px;margin:2px 0 14px;}
+  .req{color:var(--accent2);font-size:12px;margin-left:6px;}
+  .opts{display:flex;flex-wrap:wrap;gap:9px;}
+  .opt{
+    display:flex;align-items:center;gap:8px;
+    background:var(--card2);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:11px 14px;
+    cursor:pointer;
+    font-size:15px;
+    transition:border-color .15s, background .15s;
+    user-select:none;
+    flex:1 1 auto;
+  }
+  .opt:active{transform:scale(.97);}
+  .opt input{
+    position:absolute;opacity:0;width:0;height:0;pointer-events:none;
+  }
+  .opt .dot{
+    width:20px;height:20px;border-radius:6px;border:2px solid var(--muted);
+    flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;
+  }
+  .opt.radio .dot{border-radius:50%;}
+  .opt.on{border-color:var(--accent);background:linear-gradient(135deg,rgba(124,108,255,.25),rgba(255,124,195,.18));}
+  .opt.on .dot{background:var(--accent);border-color:var(--accent);}
+  .opt.on .dot::after{content:"✓";}
+  .opt.radio.on .dot::after{content:"●";font-size:11px;}
+  textarea,input[type=text]{
+    width:100%;background:var(--card2);border:1.5px solid var(--line);
+    border-radius:12px;color:var(--text);font-size:15px;padding:12px 14px;
+    font-family:inherit;margin-top:10px;resize:vertical;
+  }
+  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--accent);}
+  textarea::placeholder,input::placeholder{color:#5d6493;}
+  .note-wrap{flex-basis:100%;margin-top:4px;}
+  .note-wrap input{margin-top:0;font-size:14px;border-style:dashed;}
+  .subhint{font-size:12px;color:var(--muted);margin:12px 0 4px;}
+  button.go{
+    width:100%;padding:17px;border:none;border-radius:16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;font-size:18px;font-weight:800;cursor:pointer;margin-top:8px;
+    box-shadow:0 10px 26px rgba(124,108,255,.4);
+  }
+  button.go:active{transform:scale(.98);}
+  .result{
+    background:#0b0e20;border:1.5px solid var(--accent);border-radius:16px;
+    padding:16px;margin-top:18px;white-space:pre-wrap;font-size:14px;
+    display:none;
+  }
+  .copybtn{
+    width:100%;padding:14px;border:none;border-radius:14px;
+    background:var(--ok);color:#06281c;font-size:16px;font-weight:800;
+    cursor:pointer;margin-top:12px;display:none;
+  }
+  .copybtn:active{transform:scale(.98);}
+  .copied{background:#2bb37e;}
+  .step{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;justify-content:center;margin-top:6px;}
+  .foot{text-align:center;color:#5d6493;font-size:12px;margin-top:24px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 你的小說口味問卷</h1>
+  <p>哥要幫你找好看的小說！花 3 分鐘勾一勾，<br>填完按最下面的按鈕、把文字複製傳給哥就行 🙌</p>
+</header>
+
+<div class="wrap">
+
+  <!-- Q1 -->
+  <div class="sec">
+    <div class="q"><span class="num">1</span>列幾本你「超愛、想再看一次」的小說<span class="req">＊最重要</span></div>
+    <div class="hint">書名就好，一行一本，列 3~8 本。想到什麼寫什麼，動畫漫畫改編的原作也算。</div>
+    <textarea id="q1" rows="5" placeholder="例如：&#10;轉生史萊姆&#10;鬥羅大陸&#10;一拳超人"></textarea>
+  </div>
+
+  <!-- Q2 -->
+  <div class="sec">
+    <div class="q"><span class="num">2</span>上面最愛的那 1~2 本，你到底愛它哪裡？<span class="req">＊最重要</span></div>
+    <div class="hint">先打書名，再勾「愛它的點」，有想補充的打在最下面。這題決定哥推得準不準！</div>
+    <input type="text" id="q2book" placeholder="最愛的書名（1~2 本）">
+    <div class="subhint">愛它哪些點？（可複選）</div>
+    <div class="opts" data-group="q2like" data-nonote>
+      <label class="opt"><input type="checkbox" value="戰鬥/打鬥場面爽"><span class="dot"></span>戰鬥場面爽</label>
+      <label class="opt"><input type="checkbox" value="看主角一路變強"><span class="dot"></span>看主角變強</label>
+      <label class="opt"><input type="checkbox" value="世界觀/設定很酷"><span class="dot"></span>世界觀夠酷</label>
+      <label class="opt"><input type="checkbox" value="角色有魅力/喜歡角色"><span class="dot"></span>角色有魅力</label>
+      <label class="opt"><input type="checkbox" value="夠搞笑/好笑"><span class="dot"></span>夠搞笑</label>
+      <label class="opt"><input type="checkbox" value="劇情反轉/出乎意料"><span class="dot"></span>劇情會反轉</label>
+      <label class="opt"><input type="checkbox" value="純粹很爽/解壓"><span class="dot"></span>純粹很爽</label>
+    </div>
+    <textarea id="q2why" rows="2" placeholder="自己講一句「為什麼愛」也可以（沒有就空著）"></textarea>
+  </div>
+
+  <!-- Q3 -->
+  <div class="sec">
+    <div class="q"><span class="num">3</span>有沒有「很雷、看不下去、後悔看」的？</div>
+    <div class="hint">這個超有用！讓哥知道要幫你避開什麼。沒有就空著。</div>
+    <textarea id="q3" rows="3" placeholder="例如：XXX，因為主角太窩囊 / 後面爛尾"></textarea>
+  </div>
+
+  <!-- Q4 得獎/排行榜 -->
+  <div class="sec">
+    <div class="q"><span class="num">4</span>得獎 / 排行榜紀錄</div>
+    <div class="hint">同一本書常在好幾個網站上架。你看過的書裡，有沒有哪本在某個小說網站「得過獎、或上過排行榜前幾名」？<br>寫下來：哪本書、哪個網站／平台、第幾名或什麼獎。這能幫哥從你信任的榜單找同等級的好書。</div>
+    <textarea id="q4award" rows="3" placeholder="例如：&#10;XXX — 起點中文網 月票榜第 3&#10;OOO — 成為小說家吧 年度排行前 10"></textarea>
+  </div>
+
+  <!-- Q5 爽點 -->
+  <div class="sec">
+    <div class="q"><span class="num">5</span>你最吃哪一種「爽」？</div>
+    <div class="hint">可複選，挑你看到會上癮的。</div>
+    <div class="opts" data-group="shuang">
+      <label class="opt"><input type="checkbox" value="無敵流：主角一開始就超強、輾壓全場"><span class="dot"></span>一開始就超強，輾壓全場</label>
+      <label class="opt"><input type="checkbox" value="升級流：從弱慢慢變超強、看成長"><span class="dot"></span>從弱變強、看成長</label>
+      <label class="opt"><input type="checkbox" value="打臉流：被瞧不起→反轉打臉"><span class="dot"></span>被瞧不起→反轉打臉</label>
+      <label class="opt"><input type="checkbox" value="系統流：有金手指系統(簽到/抽獎/系統提示)"><span class="dot"></span>有金手指系統</label>
+      <label class="opt"><input type="checkbox" value="收集流：收集夥伴/寵獸/技能越來越壯大"><span class="dot"></span>收集夥伴／寵獸／技能</label>
+      <label class="opt"><input type="checkbox" value="種田流：經營發展自己的勢力/地盤"><span class="dot"></span>經營自己的勢力地盤</label>
+    </div>
+  </div>
+
+  <!-- Q6 節奏 -->
+  <div class="sec">
+    <div class="q"><span class="num">6</span>節奏你喜歡？</div>
+    <div class="opts" data-group="pace">
+      <label class="opt radio"><input type="radio" name="pace" value="開局就要爽、不要拖"><span class="dot"></span>開局就要爽，不要拖</label>
+      <label class="opt radio"><input type="radio" name="pace" value="願意等一點鋪陳"><span class="dot"></span>願意等一點鋪陳</label>
+      <label class="opt radio"><input type="radio" name="pace" value="都可以"><span class="dot"></span>都可以</label>
+    </div>
+  </div>
+
+  <!-- Q7 題材 -->
+  <div class="sec">
+    <div class="q"><span class="num">7</span>題材世界觀，愛哪些？</div>
+    <div class="hint">可複選。</div>
+    <div class="opts" data-group="genre">
+      <label class="opt"><input type="checkbox" value="異世界轉生/穿越(史萊姆那種)"><span class="dot"></span>異世界轉生／穿越</label>
+      <label class="opt"><input type="checkbox" value="東方修仙/玄幻(鬥羅那種)"><span class="dot"></span>東方修仙／玄幻</label>
+      <label class="opt"><input type="checkbox" value="西方魔法/劍與魔法"><span class="dot"></span>西方魔法</label>
+      <label class="opt"><input type="checkbox" value="科幻/末世/廢土"><span class="dot"></span>科幻／末世／廢土</label>
+      <label class="opt"><input type="checkbox" value="都市異能"><span class="dot"></span>都市異能</label>
+      <label class="opt"><input type="checkbox" value="遊戲/網遊文"><span class="dot"></span>遊戲／網遊文</label>
+    </div>
+  </div>
+
+  <!-- Q8 搞笑 -->
+  <div class="sec">
+    <div class="q"><span class="num">8</span>搞笑成分要多少？</div>
+    <div class="opts" data-group="funny">
+      <label class="opt radio"><input type="radio" name="funny" value="要很搞笑"><span class="dot"></span>要很搞笑</label>
+      <label class="opt radio"><input type="radio" name="funny" value="搞笑適中"><span class="dot"></span>適中就好</label>
+      <label class="opt radio"><input type="radio" name="funny" value="認真熱血就好、不用搞笑"><span class="dot"></span>認真熱血就好</label>
+    </div>
+  </div>
+
+  <!-- Q9 篇幅 -->
+  <div class="sec">
+    <div class="q"><span class="num">9</span>篇幅長度？</div>
+    <div class="opts" data-group="length">
+      <label class="opt radio"><input type="radio" name="length" value="愛超長連載、看到爽"><span class="dot"></span>愛超長、看到爽</label>
+      <label class="opt radio"><input type="radio" name="length" value="適中、完結就好"><span class="dot"></span>適中完結就好</label>
+      <label class="opt radio"><input type="radio" name="length" value="都可以"><span class="dot"></span>都可以</label>
+    </div>
+  </div>
+
+  <!-- Q10 連載 -->
+  <div class="sec">
+    <div class="q"><span class="num">10</span>連載中的也能接受嗎？</div>
+    <div class="hint">怕追更新追不到、或怕爛尾的人通常只看完結。</div>
+    <div class="opts" data-group="serial">
+      <label class="opt radio"><input type="radio" name="serial" value="連載中也OK"><span class="dot"></span>連載中也 OK</label>
+      <label class="opt radio"><input type="radio" name="serial" value="只看已完結的"><span class="dot"></span>只看已完結</label>
+      <label class="opt radio"><input type="radio" name="serial" value="都可以"><span class="dot"></span>都可以</label>
+    </div>
+  </div>
+
+  <!-- Q11 來源 -->
+  <div class="sec">
+    <div class="q"><span class="num">11</span>來源口味？</div>
+    <div class="hint">可複選。</div>
+    <div class="opts" data-group="source">
+      <label class="opt"><input type="checkbox" value="日系輕小說(翻譯)"><span class="dot"></span>日系輕小說</label>
+      <label class="opt"><input type="checkbox" value="中國網文"><span class="dot"></span>中國網文</label>
+      <label class="opt"><input type="checkbox" value="韓國網文"><span class="dot"></span>韓國網文</label>
+      <label class="opt"><input type="checkbox" value="都可以"><span class="dot"></span>都可以</label>
+    </div>
+  </div>
+
+  <!-- Q12 雷區 -->
+  <div class="sec">
+    <div class="q"><span class="num">12</span>絕對不要出現的東西？</div>
+    <div class="hint">勾了哥就幫你避開。可複選。</div>
+    <div class="opts" data-group="avoid">
+      <label class="opt"><input type="checkbox" value="愛情/感情戲為主"><span class="dot"></span>愛情戲為主</label>
+      <label class="opt"><input type="checkbox" value="悲劇/虐主"><span class="dot"></span>悲劇／虐主</label>
+      <label class="opt"><input type="checkbox" value="後宮/種馬"><span class="dot"></span>後宮／種馬</label>
+      <label class="opt"><input type="checkbox" value="太多政治權謀"><span class="dot"></span>政治權謀太多</label>
+      <label class="opt"><input type="checkbox" value="主角很廢/窩囊"><span class="dot"></span>主角很廢窩囊</label>
+      <label class="opt"><input type="checkbox" value="容易爛尾的"><span class="dot"></span>怕爛尾</label>
+    </div>
+  </div>
+
+  <!-- Q13 這次想要 -->
+  <div class="sec">
+    <div class="q"><span class="num">13</span>這次想要哪種？</div>
+    <div class="opts" data-group="want">
+      <label class="opt radio"><input type="radio" name="want" value="跟我愛的那幾本很像"><span class="dot"></span>跟我愛的那幾本很像</label>
+      <label class="opt radio"><input type="radio" name="want" value="給我點新口味、冒險一下"><span class="dot"></span>給我點新口味冒險</label>
+      <label class="opt radio"><input type="radio" name="want" value="兩種都來一點"><span class="dot"></span>兩種都來一點</label>
+    </div>
+  </div>
+
+  <!-- 總備註 -->
+  <div class="sec">
+    <div class="q"><span class="num">📝</span>最後，還有什麼想跟哥講的？</div>
+    <div class="hint">整體的想法、特別的需求、或上面哪題看不懂，都寫這裡。沒有就空著。</div>
+    <textarea id="note" rows="4" placeholder="例如：我想找像 XXX 那種、主角會養一堆小弟的；或：我只用某某 App 看，希望好下載…"></textarea>
+  </div>
+
+  <button class="go" id="go">✨ 產生我的口味卡</button>
+  <div class="step">產生後請按綠色按鈕複製，傳給哥 👆</div>
+
+  <div class="result" id="result"></div>
+  <button class="copybtn" id="copy">📋 一鍵複製，傳給哥</button>
+
+  <div class="foot">哥的小說推薦器 · 階段一驗準度版</div>
+</div>
+
+<script>
+// ── 高亮同步：只靠原生勾選的 change 事件，不手動攔截 label click（避免雙觸發）──
+document.querySelectorAll('.opt input').forEach(input=>{
+  input.addEventListener('change',()=>{
+    if(input.type==='radio'){
+      document.querySelectorAll('input[name="'+input.name+'"]').forEach(r=>{
+        r.closest('.opt').classList.toggle('on', r.checked);
+      });
+    }else{
+      input.closest('.opt').classList.toggle('on', input.checked);
+    }
+  });
+});
+
+// ── 每個選項組（除了 data-nonote）都加一個「這題想補充想法」欄 ──
+document.querySelectorAll('.opts:not([data-nonote])').forEach(group=>{
+  const wrap = document.createElement('div');
+  wrap.className='note-wrap';
+  wrap.innerHTML='<input type="text" placeholder="這題想補充？（其他選項、或你的想法跟上面不一樣，都寫這）">';
+  group.appendChild(wrap);
+});
+
+function getChecks(group){
+  return [...document.querySelectorAll('[data-group="'+group+'"] input[type=checkbox]:checked')].map(i=>i.value);
+}
+function noteOf(group){
+  const el = document.querySelector('[data-group="'+group+'"] .note-wrap input');
+  return el && el.value.trim() ? el.value.trim() : '';
+}
+function getRadio(name){
+  const el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? el.value : '';
+}
+// 複選題：選中的值 + 這題備註
+function checkLine(group){
+  const a = getChecks(group);
+  const n = noteOf(group);
+  if(n) a.push('（他補充：'+n+'）');
+  return a.length ? a.join('、') : '（沒填）';
+}
+// 單選題：選中的值 + 這題備註
+function radioLine(group){
+  let v = getRadio(group);
+  const n = noteOf(group);
+  if(n) v = (v?v+'　':'') + '（他補充：'+n+'）';
+  return v || '（沒填）';
+}
+function val(id){ const e=document.getElementById(id); return e&&e.value.trim()?e.value.trim():'（沒填）'; }
+
+document.getElementById('go').addEventListener('click',()=>{
+  // 第 2 題的「愛的點」用獨立的補充 textarea（q2why）
+  let likeLine = (()=>{ const a=getChecks('q2like'); return a.length?a.join('、'):'（沒勾）'; })();
+  const q2why = document.getElementById('q2why').value.trim();
+  if(q2why) likeLine += '；他補充：'+q2why;
+
+  const txt =
+`【弟弟的小說口味卡】
+
+■ 超愛、想再看的書：
+${val('q1')}
+
+■ 最愛的書 + 愛它哪裡：
+書名：${val('q2book')}
+愛的點：${likeLine}
+
+■ 看過很雷／棄追的：
+${val('q3')}
+
+■ 得獎／排行榜紀錄：
+${val('q4award')}
+
+■ 最吃哪種爽：${checkLine('shuang')}
+■ 節奏偏好：${radioLine('pace')}
+■ 愛的題材：${checkLine('genre')}
+■ 搞笑濃度：${radioLine('funny')}
+■ 篇幅長度：${radioLine('length')}
+■ 連載狀態：${radioLine('serial')}
+■ 來源口味：${checkLine('source')}
+■ 絕對不要：${checkLine('avoid')}
+■ 這次想要：${radioLine('want')}
+
+■ 最後想說的：
+${val('note')}`;
+
+  const r = document.getElementById('result');
+  r.textContent = txt;
+  r.style.display='block';
+  document.getElementById('copy').style.display='block';
+  if(r.scrollIntoView) r.scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+document.getElementById('copy').addEventListener('click',async()=>{
+  const txt = document.getElementById('result').textContent;
+  const cb = document.getElementById('copy');
+  try{
+    await navigator.clipboard.writeText(txt);
+  }catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=txt;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');ta.remove();
+  }
+  cb.textContent='✅ 複製好了！傳給哥吧';
+  cb.classList.add('copied');
+  setTimeout(()=>{cb.textContent='📋 一鍵複製，傳給哥';cb.classList.remove('copied');},2500);
+});
+</script>
+</body>
+</html>
