@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小說口味問卷</title>
+<title>史萊姆專用選書器 · 口味問卷</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7c6cff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="史萊姆專用選書器">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
   :root{
     --bg:#0f1226;
@@ -383,6 +389,13 @@ document.getElementById('copy').addEventListener('click',async()=>{
   cb.classList.add('copied');
   setTimeout(()=>{cb.textContent='📋 一鍵複製，傳給哥';cb.classList.remove('copied');},2500);
 });
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').then(reg=>reg.update()).catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
