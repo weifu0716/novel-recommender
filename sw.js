@@ -1,11 +1,12 @@
 // 史萊姆專用選書器 Service Worker
 // 策略：network-first（線上永遠拿最新，不卡舊版；離線才用快取）
 // 改版時把 CACHE 版本號 +1 即可，activate 會自動清掉舊快取
-const CACHE = 'slime-picker-v1';
+const CACHE = 'slime-picker-v2';
 const ASSETS = [
   './',
   './index.html',
   './feedback.html',
+  './records.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',

@@ -21,6 +21,7 @@
     --muted:#9aa0c7;
     --ok:#3ddc97;
     --line:#2c3358;
+    --gold:#ffcf5c;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{
@@ -29,7 +30,7 @@
     background:radial-gradient(1200px 600px at 50% -10%,#27306b 0%,var(--bg) 55%);
     color:var(--text);
     line-height:1.6;
-    padding:0 0 60px;
+    padding:0 0 92px;
   }
   .wrap{max-width:640px;margin:0 auto;padding:0 18px;}
   header{
@@ -125,9 +126,102 @@
   .copied{background:#2bb37e;}
   .step{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;justify-content:center;margin-top:6px;}
   .foot{text-align:center;color:#5d6493;font-size:12px;margin-top:24px;}
+
+  /* ── 分頁 ── */
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ── 底部導覽列 ── */
+  .bottomnav{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    display:flex;background:rgba(16,18,38,.92);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .bottomnav button{
+    flex:1;background:none;border:none;color:var(--muted);
+    font-size:12px;font-weight:700;padding:9px 0 10px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    font-family:inherit;
+  }
+  .bottomnav button .ico{font-size:22px;line-height:1;}
+  .bottomnav button.on{color:var(--accent);}
+
+  /* ── 我的書單 ── */
+  .grouphead{margin:22px 0 2px;}
+  .grouphead h2{font-size:18px;margin:0;display:flex;align-items:center;gap:8px;}
+  .grouphead .sub{color:var(--muted);font-size:12.5px;margin:4px 0 0;}
+  .blcard{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px;margin:13px 0;box-shadow:0 6px 22px rgba(0,0,0,.22);
+  }
+  .blcard.done{border-color:rgba(61,220,151,.5);}
+  .blcard .titlerow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .blcard h3{font-size:18px;margin:0;}
+  .blcard h3.struck{text-decoration:line-through;opacity:.6;}
+  .blcard .author{color:var(--muted);font-size:13px;}
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;border-radius:999px;
+    padding:2px 9px;margin-left:auto;
+  }
+  .badge.fin{background:rgba(61,220,151,.16);color:var(--ok);border:1px solid rgba(61,220,151,.4);}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;}
+  .tag{font-size:11.5px;color:var(--muted);background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;}
+  .intro{font-size:14px;margin:11px 0 0;color:#dfe2ff;}
+  .why{font-size:13.5px;margin:10px 0 0;color:#cfd3ff;background:rgba(124,108,255,.1);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:9px 12px;}
+  .why b{color:var(--accent2);}
+  .ctrl{border-top:1px dashed var(--line);margin-top:13px;padding-top:12px;}
+  .ctrl .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .readchk{
+    display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+    font-size:14px;font-weight:700;
+  }
+  .readchk .box{
+    width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:14px;color:#06281c;flex:none;
+  }
+  .readchk.on .box{background:var(--ok);border-color:var(--ok);}
+  .readchk.on .box::after{content:"✓";}
+  .stars{display:flex;gap:3px;font-size:22px;line-height:1;}
+  .stars .s{cursor:pointer;color:#3a4170;}
+  .stars .s.lit{color:var(--gold);}
+  .cmt{margin-top:10px;}
+  .cmt input{margin-top:0;font-size:14px;}
+  .morebtn{
+    margin-top:11px;width:100%;padding:10px;border-radius:11px;border:1.5px solid var(--accent);
+    background:rgba(124,108,255,.12);color:var(--accent);font-size:13.5px;font-weight:700;
+    cursor:pointer;font-family:inherit;
+  }
+  .morebtn:active{transform:scale(.98);}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:20px;border:1.5px dashed var(--line);border-radius:14px;margin:13px 0;}
+  .toast{
+    position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
+    background:var(--ok);color:#06281c;font-weight:800;font-size:14px;
+    padding:12px 20px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.35);
+    opacity:0;pointer-events:none;transition:.25s;z-index:99;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
+
+<!-- ════════ 分頁 1：我的書單 ════════ -->
+<div class="tab-panel" id="panel-booklist">
+  <header>
+    <h1>📖 我的書單</h1>
+    <p>哥推給你的書都在這。看完了打個勾、給星、寫一句感想，<br>再按下面綠色鈕複製傳給哥，哥就能幫你推更準的 🙌</p>
+  </header>
+  <div class="wrap" id="booklist-root"></div>
+  <div class="wrap">
+    <button class="copybtn" id="bl-copy" style="display:block;">📋 複製我的書單近況，傳給哥</button>
+    <div class="step" id="bl-updated"></div>
+    <div class="foot">史萊姆專用選書器 · 我的書單</div>
+  </div>
+</div>
+
+<!-- ════════ 分頁 2：看完回饋 ════════ -->
+<div class="tab-panel" id="panel-feedback">
 <header>
   <h1>📖 看完回來跟哥說</h1>
   <p>看完哥推的書（或你自己找的也算）回來填一下，<br>哥就能幫你推更準的下一批！填完按綠色按鈕複製傳給哥 🙌</p>
@@ -271,10 +365,185 @@
 
   <div class="foot">哥的小說推薦器 · 回饋表</div>
 </div>
+</div>
+
+<!-- ════════ 底部導覽列 ════════ -->
+<nav class="bottomnav">
+  <button data-tab="booklist"><span class="ico">📖</span>我的書單</button>
+  <button data-tab="feedback"><span class="ico">✍️</span>看完回饋</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="records.js"></script>
+<script>
+/* ══════════ 分頁切換 ══════════ */
+(function(){
+  const navBtns = document.querySelectorAll('.bottomnav button');
+  function show(tab){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+tab));
+    navBtns.forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
+    try{ localStorage.setItem('slime_lasttab', tab); }catch(e){}
+    window.scrollTo(0,0);
+  }
+  navBtns.forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
+  let last='booklist';
+  try{ last = localStorage.getItem('slime_lasttab') || 'booklist'; }catch(e){}
+  show(last);
+})();
+
+/* ══════════ 小提示 ══════════ */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+async function copyText(txt){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');ta.remove();
+  }
+}
+
+/* ══════════ 我的書單 ══════════ */
+(function(){
+  const data = window.BOOK_RECORDS;
+  if(!data) return;
+  const root = document.getElementById('booklist-root');
+  const STORE = 'slime_booklist_v1';
+
+  let state = {};
+  try{ state = JSON.parse(localStorage.getItem(STORE)||'{}') || {}; }catch(e){ state = {}; }
+  function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+  function st(id){ return state[id] || (state[id]={read:false,rating:0,comment:''}); }
+
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // 找書名用（複製近況、再推像這本）
+  const titleMap = {};
+  data.groups.forEach(g=>g.books.forEach(b=>titleMap[b.id]=b.title));
+
+  function starsHtml(id){
+    const r = st(id).rating;
+    let h='<div class="stars" data-id="'+id+'">';
+    for(let i=1;i<=5;i++) h+='<span class="s'+(i<=r?' lit':'')+'" data-v="'+i+'">★</span>';
+    h+='</div>';
+    return h;
+  }
+
+  function cardHtml(b){
+    const s = st(b.id);
+    let h='<div class="blcard'+(s.read?' done':'')+'" data-id="'+b.id+'">';
+    h+='<div class="titlerow"><h3 class="'+(s.read?'struck':'')+'">'+esc(b.title)+'</h3>';
+    if(b.author && b.author!=='—') h+='<span class="author">／'+esc(b.author)+'</span>';
+    if(b.complete) h+='<span class="badge fin">'+esc(b.complete)+'</span>';
+    h+='</div>';
+    if(b.tags && b.tags.length){
+      h+='<div class="tags">'+b.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>';
+    }
+    if(b.intro) h+='<p class="intro">'+esc(b.intro)+'</p>';
+    if(b.why) h+='<p class="why"><b>💡 為什麼推給你：</b>'+esc(b.why)+'</p>';
+    // 互動區
+    h+='<div class="ctrl">';
+    h+='<div class="row">';
+    h+='<div class="readchk'+(s.read?' on':'')+'" data-act="read"><span class="box"></span>看完了</div>';
+    h+=starsHtml(b.id);
+    h+='</div>';
+    h+='<div class="cmt"><input type="text" data-act="cmt" placeholder="寫一句感想…（哪裡好看／哪裡雷）" value="'+esc(s.comment)+'"></div>';
+    h+='<button class="morebtn" data-act="more">✨ 哥，再推幾本像《'+esc(b.title)+'》的</button>';
+    h+='</div>';
+    h+='</div>';
+    return h;
+  }
+
+  function groupHtml(g){
+    let h='<div class="grouphead"><h2>'+g.icon+' '+esc(g.title)+'</h2>';
+    if(g.subtitle) h+='<p class="sub">'+esc(g.subtitle)+'</p>';
+    h+='</div>';
+    if(!g.books.length){
+      h+='<div class="empty">目前還沒有～<br>在回饋表跟哥說你想看什麼，哥查好就會放進這裡 📥</div>';
+    }else{
+      h+=g.books.map(cardHtml).join('');
+    }
+    return h;
+  }
+
+  function render(){
+    root.innerHTML = data.groups.map(groupHtml).join('');
+  }
+  render();
+
+  document.getElementById('bl-updated').textContent = '書單更新：'+data.updated;
+
+  // 事件代理
+  root.addEventListener('click', e=>{
+    const card = e.target.closest('.blcard'); if(!card) return;
+    const id = card.dataset.id;
+    // 看完打勾
+    if(e.target.closest('[data-act="read"]')){
+      const s=st(id); s.read=!s.read; save(); render();
+      if(s.read) toast('打勾完成 ✓ 記得最後複製傳給哥');
+      return;
+    }
+    // 星等
+    const star = e.target.closest('.stars .s');
+    if(star){
+      const v=+star.dataset.v; const s=st(id);
+      s.rating = (s.rating===v)?0:v; // 再點同一顆=取消
+      save(); render();
+      return;
+    }
+    // 再推像這本
+    if(e.target.closest('[data-act="more"]')){
+      copyText('哥，幫我再推幾本像《'+titleMap[id]+'》的，謝謝！🙏');
+      toast('已複製，貼到 LINE 傳給哥 📨');
+      return;
+    }
+  });
+  // 評語（即時存，不重繪以免游標跳掉）
+  root.addEventListener('input', e=>{
+    if(e.target.dataset.act==='cmt'){
+      const card=e.target.closest('.blcard');
+      st(card.dataset.id).comment = e.target.value;
+      save();
+    }
+  });
+
+  // 複製近況傳給哥
+  document.getElementById('bl-copy').addEventListener('click',()=>{
+    const lines=[];
+    data.groups.forEach(g=>{
+      g.books.forEach(b=>{
+        const s=state[b.id]; if(!s) return;
+        if(!s.read && !s.rating && !(s.comment&&s.comment.trim())) return;
+        let line='・'+b.title;
+        const bits=[];
+        if(s.read) bits.push('看完了');
+        if(s.rating) bits.push('★'.repeat(s.rating));
+        if(bits.length) line+=' '+bits.join(' ');
+        if(s.comment&&s.comment.trim()) line+=' ——「'+s.comment.trim()+'」';
+        lines.push(line);
+      });
+    });
+    const body = lines.length ? lines.join('\n') : '（還沒標任何書～看完了記得來打勾、給星、寫感想）';
+    const txt='【弟弟的書單近況】（'+data.updated+' 的書單）\n\n'+body+'\n\n哥可以照這個幫我推下一批 🙌';
+    copyText(txt);
+    const cb=document.getElementById('bl-copy');
+    cb.textContent='✅ 複製好了！傳給哥吧';cb.classList.add('copied');
+    setTimeout(()=>{cb.textContent='📋 複製我的書單近況，傳給哥';cb.classList.remove('copied');},2500);
+  });
+})();
+</script>
 
 <script>
+/* ══════════ 看完回饋表（原本邏輯） ══════════ */
 // ── 高亮同步：靠原生 change 事件 ──
-document.querySelectorAll('.opt input').forEach(input=>{
+document.querySelectorAll('#panel-feedback .opt input').forEach(input=>{
   input.addEventListener('change',()=>{
     if(input.type==='radio'){
       document.querySelectorAll('input[name="'+input.name+'"]').forEach(r=>{
@@ -287,7 +556,7 @@ document.querySelectorAll('.opt input').forEach(input=>{
 });
 
 // ── 複選題（非 data-nonote）加一個「這題想補充」欄 ──
-document.querySelectorAll('.opts:not([data-nonote])').forEach(group=>{
+document.querySelectorAll('#panel-feedback .opts:not([data-nonote])').forEach(group=>{
   const wrap = document.createElement('div');
   wrap.className='note-wrap';
   wrap.innerHTML='<input type="text" placeholder="這題想補充？（其他選項、或你的想法，都寫這）">';
@@ -321,7 +590,7 @@ function val(id){ const e=document.getElementById(id); return e&&e.value.trim()?
 
 document.getElementById('go').addEventListener('click',()=>{
   // 收集 3 張書卡，有填書名的才輸出
-  const books = [...document.querySelectorAll('.bookcard')].map(c=>{
+  const books = [...document.querySelectorAll('#panel-feedback .bookcard')].map(c=>{
     const name = c.querySelector('.bn').value.trim();
     if(!name) return null;
     const read = getRadio(c.dataset.read);
@@ -366,13 +635,7 @@ ${val('note')}`;
 document.getElementById('copy').addEventListener('click',async()=>{
   const txt = document.getElementById('result').textContent;
   const cb = document.getElementById('copy');
-  try{
-    await navigator.clipboard.writeText(txt);
-  }catch(e){
-    const ta=document.createElement('textarea');
-    ta.value=txt;document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');ta.remove();
-  }
+  await copyText(txt);
   cb.textContent='✅ 複製好了！傳給哥吧';
   cb.classList.add('copied');
   setTimeout(()=>{cb.textContent='📋 一鍵複製，傳給哥';cb.classList.remove('copied');},2500);
